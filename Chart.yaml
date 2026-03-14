@@ -5,7 +5,7 @@ type: application
 version: 0.1.1
 appVersion: "0.1.0"
 keywords: [ai, agent, gateway, llm]
-home: https://github.com/dataplanelabs/goclaw
-sources: [https://github.com/dataplanelabs/goclaw]
+home: https://github.com/nextlevelbuilder/goclaw
+sources: [https://github.com/nextlevelbuilder/goclaw]
 maintainers:
   - name: dataplanelabs
