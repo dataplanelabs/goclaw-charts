@@ -21,6 +21,10 @@ server:
       cpu: "2"
       memory: 1Gi
   extraEnv: []
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
+    # maxUnavailable: 1
 
 ui:
   enabled: true
@@ -37,6 +41,10 @@ ui:
     limits:
       cpu: 500m
       memory: 128Mi
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
+    # maxUnavailable: 1
 
 db:
   enabled: true
