@@ -87,6 +87,19 @@ probes:
     period: 30
     timeoutSeconds: 3
 
+browser:
+  enabled: true
+  image: zenika/alpine-chrome:124
+  port: 9222
+  shmSize: 2Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: "2"
+      memory: 2Gi
+
 config:
   gatewayToken: ""
   encryptionKey: ""

@@ -9,3 +9,6 @@ data:
   GOCLAW_PORT: {{ .Values.server.port | quote }}
   GOCLAW_DATA_DIR: "/app/data"
   GOCLAW_WORKSPACE: "/app/workspace"
+  {{- if .Values.browser.enabled }}
+  GOCLAW_BROWSER_REMOTE_URL: "ws://localhost:{{ .Values.browser.port }}"
+  {{- end }}
