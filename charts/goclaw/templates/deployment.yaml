@@ -7,8 +7,14 @@ metadata:
 spec:
   replicas: {{ .Values.server.replicas }}
   strategy:
-    type: Recreate
+    type: {{ .Values.server.strategy.type }}
+    {{- if eq .Values.server.strategy.type "RollingUpdate" }}
+    rollingUpdate:
+      maxSurge: {{ .Values.server.strategy.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.server.strategy.rollingUpdate.maxUnavailable }}
+    {{- else }}
     rollingUpdate: null
+    {{- end }}
   selector:
     matchLabels:
       {{- include "goclaw.selectorLabels" . | nindent 6 }}

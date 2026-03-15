@@ -6,6 +6,13 @@ image:
 server:
   replicas: 1
   port: 18790
+  # RollingUpdate for zero-downtime on single-node clusters (RWO PVC mounts on same node).
+  # Use Recreate on multi-node clusters with RWO PVCs to avoid mount conflicts.
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   resources:
     requests:
       cpu: 100m
