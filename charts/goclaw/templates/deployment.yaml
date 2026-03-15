@@ -147,6 +147,7 @@ spec:
             - name: chrome-shm
               mountPath: /dev/shm
           securityContext:
+            runAsUser: 1000
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             capabilities:
