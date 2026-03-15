@@ -76,9 +76,6 @@ spec:
             {{- if .Values.persistence.workspace.enabled }}
             - name: workspace
               mountPath: /app/workspace
-            - name: workspace
-              mountPath: /app/.goclaw
-              subPath: .goclaw
             {{- end }}
           startupProbe:
             httpGet:
