@@ -63,6 +63,10 @@ spec:
             - name: GOCLAW_POSTGRES_DSN
               value: "postgres://{{ include "goclaw.dbUser" . }}:$(POSTGRES_PASSWORD)@{{ include "goclaw.dbHost" . }}:{{ include "goclaw.dbPort" . }}/{{ include "goclaw.dbName" . }}?sslmode=disable"
             {{- end }}
+            {{- if .Values.persistence.data.enabled }}
+            - name: GOCLAW_CONFIG
+              value: /app/data/config.json
+            {{- end }}
             {{- with .Values.server.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
