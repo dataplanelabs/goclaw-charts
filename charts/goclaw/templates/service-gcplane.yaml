@@ -1,0 +1,23 @@
+{{- if .Values.gcplane.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "goclaw.fullname" . }}-gcplane
+  labels:
+    {{- include "goclaw.labels" . | nindent 4 }}
+    app.kubernetes.io/component: gcplane
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: {{ .Values.gcplane.port | quote }}
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "goclaw.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: gcplane
+  ports:
+    - name: http
+      port: {{ .Values.gcplane.port }}
+      targetPort: http
+      protocol: TCP
+{{- end }}

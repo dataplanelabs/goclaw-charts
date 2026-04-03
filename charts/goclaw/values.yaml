@@ -1,8 +1,26 @@
+# -- Global settings shared across all components
+global:
+  # -- Image pull secrets for private registries (e.g., GHCR, Docker Hub, ECR, GCR)
+  # Example:
+  #   imagePullSecrets:
+  #     - name: ghcr-credentials
+  imagePullSecrets: []
+
+# -- GoClaw server image
+# Available registries:
+#   GHCR:       ghcr.io/nextlevelbuilder/goclaw
+#   Docker Hub: digitop/goclaw
+# Available tag variants:
+#   v2.65.0       — standard (backend + embedded UI + Python)
+#   v2.65.0-base  — lightweight API-only, no UI or runtimes
+#   v2.65.0-full  — all runtimes + skill dependencies pre-installed
+#   v2.65.0-otel  — standard + OpenTelemetry instrumentation
 image:
-  repository: ghcr.io/dataplanelabs/goclaw
-  tag: ""
+  repository: ghcr.io/nextlevelbuilder/goclaw
+  tag: "v2.65.0-full"
   pullPolicy: IfNotPresent
 
+# -- GoClaw API server
 server:
   replicas: 1
   port: 18790
@@ -26,11 +44,15 @@ server:
     minAvailable: 1
     # maxUnavailable: 1
 
+# -- GoClaw web UI (separate nginx-based image)
+# Available registries:
+#   GHCR:       ghcr.io/nextlevelbuilder/goclaw-web
+#   Docker Hub: digitop/goclaw-web
 ui:
   enabled: true
   image:
-    repository: ghcr.io/dataplanelabs/goclaw-web
-    tag: ""
+    repository: ghcr.io/nextlevelbuilder/goclaw-web
+    tag: "v2.65.0"
     pullPolicy: IfNotPresent
   replicas: 1
   port: 80
@@ -46,9 +68,11 @@ ui:
     minAvailable: 1
     # maxUnavailable: 1
 
+# -- Sidecar PostgreSQL with pgvector (dev/testing only).
+# For production, disable and use externalDatabase instead.
 db:
   enabled: true
-  image: pgvector/pgvector:0.8.0-pg17
+  image: pgvector/pgvector:pg18
   storage: 20Gi
   storageClass: ""
   resources:
@@ -59,6 +83,7 @@ db:
       cpu: "1"
       memory: 1Gi
 
+# -- External PostgreSQL connection (used when db.enabled=false)
 externalDatabase:
   url: ""
   host: ""
@@ -67,6 +92,7 @@ externalDatabase:
   user: "goclaw"
   existingSecret: ""
 
+# -- Persistent storage for GoClaw data and workspace
 persistence:
   data:
     enabled: true
@@ -77,6 +103,7 @@ persistence:
     size: 10Gi
     storageClass: ""
 
+# -- Ingress configuration
 ingress:
   enabled: false
   host: ""
@@ -87,6 +114,7 @@ ingress:
 networkPolicy:
   enabled: false
 
+# -- Health probe configuration for GoClaw server
 probes:
   startup:
     path: /health
@@ -102,6 +130,7 @@ probes:
     period: 30
     timeoutSeconds: 3
 
+# -- Chrome browser sidecar for web automation
 browser:
   enabled: true
   image: zenika/alpine-chrome:124
@@ -115,7 +144,55 @@ browser:
       cpu: "2"
       memory: 2Gi
 
+# -- Secrets configuration
 config:
   gatewayToken: ""
   encryptionKey: ""
   existingSecret: ""
+
+# -- GCPlane: declarative GitOps control plane for GoClaw auto-deployment.
+# Watches manifests and continuously reconciles GoClaw resources (providers, agents, channels, etc.)
+gcplane:
+  enabled: false
+  image:
+    repository: ghcr.io/dataplanelabs/gcplane
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  replicas: 1
+  port: 8480
+  # -- Reconciliation interval
+  interval: "30s"
+  # -- Log format: "text" or "json"
+  logFormat: "json"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  # -- Drift notification webhook
+  webhook:
+    url: ""
+    # -- Format: slack, discord, googlechat, teams, telegram
+    format: "slack"
+  # -- GoClaw manifest YAML for auto-deployment.
+  # Supports ${GOCLAW_TOKEN} variable substitution at runtime.
+  # When empty, a default manifest is generated that connects to the in-cluster GoClaw service.
+  # Example:
+  #   manifest: |
+  #     apiVersion: gcplane/v1
+  #     kind: Manifest
+  #     metadata:
+  #       name: my-goclaw
+  #     spec:
+  #       provider:
+  #         url: http://goclaw:18790
+  #     resources:
+  #       - kind: Provider
+  #         name: anthropic
+  #         spec:
+  #           type: anthropic
+  #           apiKey: ${ANTHROPIC_API_KEY}
+  manifest: ""
+  extraEnv: []

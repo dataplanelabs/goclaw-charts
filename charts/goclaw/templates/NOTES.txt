@@ -1,0 +1,26 @@
+GoClaw {{ .Chart.AppVersion }} has been deployed!
+{{- if .Values.ingress.enabled }}
+
+Access GoClaw at: https://{{ .Values.ingress.host }}
+{{- else }}
+
+To access the GoClaw API:
+  kubectl port-forward svc/{{ include "goclaw.fullname" . }} {{ .Values.server.port }}:{{ .Values.server.port }}
+{{- if .Values.ui.enabled }}
+
+To access the Web UI:
+  kubectl port-forward svc/{{ include "goclaw.fullname" . }}-ui {{ .Values.ui.port }}:{{ .Values.ui.port }}
+{{- end }}
+{{- end }}
+{{- if .Values.gcplane.enabled }}
+
+GCPlane (GitOps control plane) is enabled.
+  Reconciliation interval: {{ .Values.gcplane.interval }}
+  {{- if .Values.gcplane.webhook.url }}
+  Drift notifications: {{ .Values.gcplane.webhook.format }}
+  {{- end }}
+
+To check GCPlane status:
+  kubectl port-forward svc/{{ include "goclaw.fullname" . }}-gcplane {{ .Values.gcplane.port }}:{{ .Values.gcplane.port }}
+  curl http://localhost:{{ .Values.gcplane.port }}/readyz
+{{- end }}

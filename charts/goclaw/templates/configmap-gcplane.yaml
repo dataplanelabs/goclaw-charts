@@ -1,0 +1,22 @@
+{{- if .Values.gcplane.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "goclaw.fullname" . }}-gcplane
+  labels:
+    {{- include "goclaw.labels" . | nindent 4 }}
+    app.kubernetes.io/component: gcplane
+data:
+  manifest.yaml: |
+    {{- if .Values.gcplane.manifest }}
+    {{- .Values.gcplane.manifest | nindent 4 }}
+    {{- else }}
+    apiVersion: gcplane/v1
+    kind: Manifest
+    metadata:
+      name: {{ include "goclaw.fullname" . }}
+    spec:
+      provider:
+        url: http://{{ include "goclaw.fullname" . }}:{{ .Values.server.port }}
+    {{- end }}
+{{- end }}

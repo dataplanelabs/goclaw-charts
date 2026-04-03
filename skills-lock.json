@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "helm-chart-scaffolding": {
+      "source": "smithery.ai",
+      "sourceType": "well-known",
+      "computedHash": "9501756f3224c35d6d0150af6708eb0060e67d852e6dc3fd46a330c570982365"
+    }
+  }
+}

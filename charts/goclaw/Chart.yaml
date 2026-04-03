@@ -1,11 +1,13 @@
 apiVersion: v2
 name: goclaw
-description: GoClaw - Multi-agent AI Gateway
+description: GoClaw - Multi-agent AI Gateway with optional GCPlane GitOps control plane
 type: application
-version: 0.1.5
-appVersion: "0.1.0"
-keywords: [ai, agent, gateway, llm]
+version: 0.2.0
+appVersion: "v2.65.0"
+keywords: [ai, agent, gateway, llm, gitops]
 home: https://github.com/nextlevelbuilder/goclaw
-sources: [https://github.com/nextlevelbuilder/goclaw]
+sources:
+  - https://github.com/nextlevelbuilder/goclaw
+  - https://github.com/dataplanelabs/gcplane
 maintainers:
   - name: dataplanelabs

@@ -1,3 +1,6 @@
 charts/*/charts/
 charts/*/Chart.lock
 *.tgz
+
+plans/
+.claude/session-state

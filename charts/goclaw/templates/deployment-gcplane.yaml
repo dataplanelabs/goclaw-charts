@@ -1,0 +1,87 @@
+{{- if .Values.gcplane.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "goclaw.fullname" . }}-gcplane
+  labels:
+    {{- include "goclaw.labels" . | nindent 4 }}
+    app.kubernetes.io/component: gcplane
+spec:
+  replicas: {{ .Values.gcplane.replicas }}
+  selector:
+    matchLabels:
+      {{- include "goclaw.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: gcplane
+  template:
+    metadata:
+      labels:
+        {{- include "goclaw.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: gcplane
+      annotations:
+        checksum/manifest: {{ include (print $.Template.BasePath "/configmap-gcplane.yaml") . | sha256sum }}
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: gcplane
+          image: "{{ .Values.gcplane.image.repository }}:{{ .Values.gcplane.image.tag }}"
+          imagePullPolicy: {{ .Values.gcplane.image.pullPolicy }}
+          args:
+            - serve
+            - -f
+            - /config/manifest.yaml
+            - --interval
+            - {{ .Values.gcplane.interval | quote }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.gcplane.port }}
+              protocol: TCP
+          env:
+            - name: GOCLAW_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "goclaw.secretName" . }}
+                  key: GOCLAW_GATEWAY_TOKEN
+            - name: GCPLANE_LOG_FORMAT
+              value: {{ .Values.gcplane.logFormat | quote }}
+            {{- if .Values.gcplane.webhook.url }}
+            - name: GCPLANE_WEBHOOK_URL
+              value: {{ .Values.gcplane.webhook.url | quote }}
+            - name: GCPLANE_WEBHOOK_FORMAT
+              value: {{ .Values.gcplane.webhook.format | quote }}
+            {{- end }}
+            {{- with .Values.gcplane.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.gcplane.resources | nindent 12 }}
+          securityContext:
+            runAsUser: 65534
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "goclaw.fullname" . }}-gcplane
+{{- end }}

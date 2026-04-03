@@ -25,6 +25,10 @@ spec:
         {{- include "goclaw.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: server
     spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- if .Values.db.enabled }}
       initContainers:
         - name: wait-for-db
