@@ -8,16 +8,14 @@ global:
 
 # -- GoClaw server image
 # Available registries:
-#   GHCR:       ghcr.io/nextlevelbuilder/goclaw
-#   Docker Hub: digitop/goclaw
-# Available tag variants:
-#   v2.65.0       — standard (backend + embedded UI + Python)
-#   v2.65.0-base  — lightweight API-only, no UI or runtimes
-#   v2.65.0-full  — all runtimes + skill dependencies pre-installed
-#   v2.65.0-otel  — standard + OpenTelemetry instrumentation
+#   GHCR (default): ghcr.io/dataplanelabs/goclaw   (public, no pull secret needed)
+#   Upstream:       ghcr.io/nextlevelbuilder/goclaw
+#   Docker Hub:     digitop/goclaw
+# The dataplanelabs build is a single image with embedded web UI + Python runtime.
+# Tags: vX.Y.Z (semver), main, sha-<short>, latest
 image:
-  repository: ghcr.io/nextlevelbuilder/goclaw
-  tag: "v2.65.0-full"
+  repository: ghcr.io/dataplanelabs/goclaw
+  tag: "v3.11.3"
   pullPolicy: IfNotPresent
 
 # -- GoClaw API server
@@ -46,13 +44,14 @@ server:
 
 # -- GoClaw web UI (separate nginx-based image)
 # Available registries:
-#   GHCR:       ghcr.io/nextlevelbuilder/goclaw-web
-#   Docker Hub: digitop/goclaw-web
+#   GHCR (default): ghcr.io/dataplanelabs/goclaw-web   (public, no pull secret needed)
+#   Upstream:       ghcr.io/nextlevelbuilder/goclaw-web
+#   Docker Hub:     digitop/goclaw-web
 ui:
   enabled: true
   image:
-    repository: ghcr.io/nextlevelbuilder/goclaw-web
-    tag: "v2.65.0"
+    repository: ghcr.io/dataplanelabs/goclaw-web
+    tag: "v3.11.3"
     pullPolicy: IfNotPresent
   replicas: 1
   port: 80

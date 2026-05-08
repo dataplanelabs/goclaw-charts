@@ -1,6 +1,6 @@
 # GoClaw Helm Charts
 
-Helm charts for deploying [GoClaw](https://github.com/nextlevelbuilder/goclaw) — a multi-agent AI gateway.
+Helm charts for deploying [GoClaw](https://github.com/dataplanelabs/goclaw) — a multi-agent AI gateway.
 
 ## Charts
 
@@ -36,17 +36,16 @@ GoClaw images are published to multiple registries. Override `image.repository` 
 
 | Registry | Server Image | Web UI Image |
 |----------|-------------|--------------|
-| GHCR (default) | `ghcr.io/nextlevelbuilder/goclaw` | `ghcr.io/nextlevelbuilder/goclaw-web` |
-| Docker Hub | `digitop/goclaw` | `digitop/goclaw-web` |
+| GHCR (default) | `ghcr.io/dataplanelabs/goclaw` | `ghcr.io/dataplanelabs/goclaw-web` |
+| Upstream GHCR | `ghcr.io/nextlevelbuilder/goclaw` | `ghcr.io/nextlevelbuilder/goclaw-web` |
+| Docker Hub (upstream) | `digitop/goclaw` | `digitop/goclaw-web` |
 
-**Image tag variants** (append to version, e.g., `v2.65.0-full`):
+The dataplanelabs build is a single image with embedded web UI + Python runtime —
+no `-full`/`-base`/`-otel` variants. Tags follow plain semver: `vX.Y.Z`, plus
+`main`, `sha-<short>`, and `latest` for the rolling main branch.
 
-| Variant | Suffix | Description |
-|---------|--------|-------------|
-| Standard | _(none)_ | Backend + embedded UI + Python |
-| Base | `-base` | Lightweight API-only, no UI or runtimes |
-| Full | `-full` | All runtimes + skill dependencies pre-installed |
-| OTel | `-otel` | Standard + OpenTelemetry instrumentation |
+The upstream `nextlevelbuilder` registry still publishes variant suffixes
+(`-base`, `-full`, `-otel`) if you need them.
 
 **Private registry example:**
 
@@ -57,12 +56,12 @@ global:
 
 image:
   repository: my-registry.example.com/goclaw
-  tag: "v2.65.0-full"
+  tag: "v3.11.3"
 
 ui:
   image:
     repository: my-registry.example.com/goclaw-web
-    tag: "v2.65.0"
+    tag: "v3.11.3"
 ```
 
 ### Database Options
@@ -143,8 +142,8 @@ gcplane:
 
 | Component | Default Image |
 |-----------|---------------|
-| Server | `ghcr.io/nextlevelbuilder/goclaw:v2.65.0-full` |
-| UI | `ghcr.io/nextlevelbuilder/goclaw-web:v2.65.0` |
+| Server | `ghcr.io/dataplanelabs/goclaw:v3.11.3` |
+| UI | `ghcr.io/dataplanelabs/goclaw-web:v3.11.3` |
 | GCPlane | `ghcr.io/dataplanelabs/gcplane:latest` |
 | Database | `pgvector/pgvector:pg18` |
 | Chrome | `zenika/alpine-chrome:124` |
